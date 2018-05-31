@@ -1,8 +1,21 @@
 Ext.define('CustomApp', {
-    extend: 'Rally.app.App',
-    componentCls: 'app',
-    launch: function() {
+  	extend: 'Rally.app.TimeboxScopedApp',
+  	scopeType: 'release',
+  	comboboxConfig: {
+    	fieldLabel: 'Select an timebox:</div>',
+    	width: 400
+  	},    
+  	componentCls: 'app',
+    onTimeboxScopeChange: function(newTimeboxScope) {
         //Write app code here
+        var myfilters = [];
+        myfilters.push(newTimeboxScope.getQueryFilter());
+        myfilters.push({
+        	property: 'ScheduleState',
+        	operator: '=',
+        	value: 'Accepted'
+
+        });
 	    Ext.create('Rally.data.wsapi.Store', {
 	        model: 'userstory',
 	        autoLoad: true,
@@ -11,6 +24,7 @@ Ext.define('CustomApp', {
 	          scope: this
 	        },
 	        fetch: ['FormattedID', 'Name', 'Owner', 'Milestones', 'Iteration', 'Release', 'ScheduleState'],
+	        filters: myfilters
      	});
     },
     _onDataLoaded: function(store, data) {
